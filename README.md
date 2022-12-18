@@ -1,10 +1,10 @@
 ## Install dependency
-```commandline
+```bash
 pip install -r requirments
 ```
 
 ## Setting database 
-Setting database .env file in folder app/system   
+.env file in folder app/system   
 
 ## Run
 ```bash
@@ -18,7 +18,7 @@ swagger docs - `http://localhost:8000/docs`
 redoc - `http://localhost:8000/redoc`
 
 
-## Running Test
-```commandline
+## Running Unit Test
+```bash
 pytest -v
 ```
