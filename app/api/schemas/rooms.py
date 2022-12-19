@@ -1,11 +1,9 @@
-from typing import Dict, Any, Optional, List, Tuple
-from pydantic import BaseModel, Json, ValidationError, validator, create_model, EmailStr, constr
-from datetime import date, datetime
+from typing import List
+from pydantic import BaseModel
+from datetime import datetime
 
+from app.api.schemas.users import UserRoom
 
-class CreateRoom(BaseModel):
-    sender: int
-    receiver: int
 
 class Message(BaseModel):
     id: int
@@ -16,7 +14,7 @@ class Message(BaseModel):
     class Config:
         orm_mode = True
 
-class Room(CreateRoom):
+class Room(UserRoom):
     id: int
     messages: List[Message]
 

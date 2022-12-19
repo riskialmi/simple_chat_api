@@ -1,8 +1,7 @@
 from app.api.crud.users import insert_user
 from app.api.crud.rooms import insert_room, update_messages_in_room
 from app.api.crud.messages import insert_message
-from app.api.schemas.users import Login
-from app.api.schemas.rooms import CreateRoom
+from app.api.schemas.users import Login, UserRoom
 
 # initial data
 USER_NAME = {'sender': 'test1',
@@ -22,8 +21,8 @@ def users(db):
 
 
 def chat_room(sender_id, receiver_id, db):
-    data = CreateRoom(**{'sender': sender_id,
-                         'receiver': receiver_id})
+    data = UserRoom(**{'sender': sender_id,
+                       'receiver': receiver_id})
     return insert_room(data, db)
 
 

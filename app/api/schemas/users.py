@@ -30,3 +30,8 @@ class User(Login):
 
     class Config:
         orm_mode = True
+
+
+class UserRoom(BaseModel):
+    sender: int
+    receiver: int

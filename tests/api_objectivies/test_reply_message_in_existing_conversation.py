@@ -1,21 +1,15 @@
-from sqlalchemy.orm import Session
-from copy import copy
+from typing import List
 
-from app.api.crud.messages import get_message_by_id
-from tests.api_objectivies.populate_data import MESSAGES
+from pydantic import parse_obj_as
 
-
-def get_messages(room, db: Session):
-    msg = []
-    for msg_id in room.messages:
-        msg.append(get_message_by_id(id=msg_id, db=db).content)
-
-    return msg
+from app.api.crud.messages import get_messages_by_ids, get_message_by_content
+from app.api.crud.rooms import get_room_by_members
+from app.api.schemas.rooms import Message
+from app.api.schemas.users import UserRoom
 
 def test_scenario_1(client, conversation, db):
-    messages = get_messages(conversation['room'], db)
     # existing conversation
-    assert messages == MESSAGES['sender']
+    old_messages = parse_obj_as(List[Message], get_messages_by_ids(conversation['room'].messages, db))
 
     with client.websocket_connect(f"/ws/{conversation['room'].id}/{conversation['sender_id']}") as websocket:
         entered_chat = websocket.receive_json()
@@ -33,8 +27,14 @@ def test_scenario_1(client, conversation, db):
         assert receive_text == text
 
     # conversation after sending message
-    expected_conv = MESSAGES['sender'].copy()
-    expected_conv.append(text)
-    messages = get_messages(conversation['room'], db)
+    members = UserRoom(**{'sender': conversation['sender_id'],
+                       'receiver': conversation['receiver_id']})
+    msg_ids = get_room_by_members(members, db).messages
+    messages = parse_obj_as(List[Message], get_messages_by_ids(msg_ids, db))
+
+    # expected massages in conversation
+    new_msg = parse_obj_as(Message, get_message_by_content(content=text, db=db))
+    old_messages.append(new_msg)
+    expected_conv = old_messages
 
     assert messages == expected_conv
