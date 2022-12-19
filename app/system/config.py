@@ -13,3 +13,9 @@ DATABASE_URL = config(
     cast=str,
     default=f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
 )
+
+DATABASE_TEST_URL = config(
+    "DATABASE_TEST_URL",
+    cast=str,
+    default=DATABASE_URL
+)

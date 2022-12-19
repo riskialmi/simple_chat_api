@@ -7,13 +7,13 @@ from app.db.models import Base
 from app.system.main import app
 from app.db.database import get_db
 from tests.api_objectivies import populate_data
+from app.system.config import DATABASE_TEST_URL
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 PREFIX = '/api'
 
 @pytest.fixture(scope="session")
 def db_engine():
-    engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+    engine = create_engine(DATABASE_TEST_URL)
     Base.metadata.create_all(bind=engine)
     yield engine
 
@@ -42,10 +42,11 @@ def client(db):
 @pytest.fixture
 def initial_data(db):
     users = populate_data.users(db)
-    room = populate_data.room(sender=users[0], receiver=users[1], db=db)
-    return {'sender': users[0], 'room': room}
+    room = populate_data.chat_room(sender_id=users[0], receiver_id=users[1], db=db)
+    return {'sender_id': users[0], 'receiver_id': users[1], 'room': room}
 
 @pytest.fixture
 def conversation(db, initial_data):
-    msg = populate_data.messages(room=initial_data['room'],  db=db)
-    return {'sender': initial_data['sender'], 'room': initial_data['room']}
+    initial_data['messages'] = populate_data.messages(room=initial_data['room'],
+                                                      sender_id=initial_data['sender_id'], db=db)
+    return initial_data
