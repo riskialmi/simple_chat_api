@@ -15,13 +15,13 @@ def get_messages(room, db: Session):
 def test_scenario_1(client, conversation, db):
     messages = get_messages(conversation['room'], db)
     # existing conversation
-    assert messages == MESSAGES
+    assert messages == MESSAGES['sender']
 
-    with client.websocket_connect(f"/ws/{conversation['room'].id}/{conversation['sender']}") as websocket:
+    with client.websocket_connect(f"/ws/{conversation['room'].id}/{conversation['sender_id']}") as websocket:
         entered_chat = websocket.receive_json()
 
         assert entered_chat == {
-            "user_id": conversation['sender'],
+            "user_id": conversation['sender_id'],
             "room_id": conversation['room'].id,
             "type": "entrance"
         }
@@ -33,11 +33,8 @@ def test_scenario_1(client, conversation, db):
         assert receive_text == text
 
     # conversation after sending message
-    expected_conv = MESSAGES.copy()
+    expected_conv = MESSAGES['sender'].copy()
     expected_conv.append(text)
     messages = get_messages(conversation['room'], db)
 
     assert messages == expected_conv
-
-
-

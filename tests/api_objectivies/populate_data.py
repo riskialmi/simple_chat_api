@@ -4,13 +4,16 @@ from app.api.crud.messages import insert_message
 from app.api.schemas.users import Login
 from app.api.schemas.rooms import CreateRoom
 
-USER_NAME = ['test1', 'test2']
-MESSAGES = ['Halo', 'Apa kabar?']
+# initial data
+USER_NAME = {'sender': 'test1',
+             'receiver': 'test2'}
+
+MESSAGES = {'sender': ['Halo', 'Apa kabar?']}
 
 
 def users(db):
     user_id = []
-    for u in USER_NAME:
+    for u in USER_NAME.values():
         data = Login(**{'name': u})
         user = insert_user(data, db)
         user_id.append(user.id)
@@ -18,16 +21,18 @@ def users(db):
     return user_id
 
 
-def room(sender, receiver, db):
-    data = CreateRoom(**{'sender': sender,
-                         'receiver': receiver})
-
+def chat_room(sender_id, receiver_id, db):
+    data = CreateRoom(**{'sender': sender_id,
+                         'receiver': receiver_id})
     return insert_room(data, db)
 
 
-def messages(room, db):
-    sender_id = 1
+def messages(room, sender_id, db):
+    msgs = []
 
-    for m in MESSAGES:
+    for m in MESSAGES['sender']:
         msg = insert_message(user_id=sender_id, content=m, db=db)
         update_messages_in_room(id=room.id, message_id=msg.id, db=db)
+        msgs.append(msg)
+
+    return msgs

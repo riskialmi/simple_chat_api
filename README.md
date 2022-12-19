@@ -17,6 +17,8 @@ swagger docs - `http://localhost:8000/docs`
 
 redoc - `http://localhost:8000/redoc`
 
+websocket - `http://localhost:8000/ws/{room_id}/{user_id}`
+
 
 ## Running Unit Test
 ```bash
